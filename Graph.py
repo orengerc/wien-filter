@@ -43,11 +43,19 @@ class Graph:
             os.mkdir("graphs")
         fig.write_image("graphs/{}.png".format(self._graph_title), format='png')
 
+    def plot(self):
+        plt.plot(self._x, self._y)
+        plt.xlabel(self._x_label)
+        plt.ylabel(self._y_label)
+        plt.title(self._graph_title)
+        plt.grid()
+        plt.show()
+
     def simple_plot(self):
         fig = go.Figure(
             [go.Scatter(x=self._x, y=self._y, name="Graph", showlegend=True,
-                        marker=dict(color="black", opacity=.7),
-                        line=dict(color="black", width=1))],
+                        marker=dict(color="blue", opacity=.7),
+                        line=dict(color="blue", width=1))],
             layout=go.Layout(title=fr"{self._graph_title}",
                              xaxis={"title": self._x_label},
                              yaxis={"title": self._y_label},

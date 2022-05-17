@@ -6,6 +6,7 @@ Roy & Oren
 import numpy as np
 import matplotlib.pyplot as plt
 from enum import IntEnum
+from Graph import *
 
 
 class Coordinate(IntEnum):
@@ -33,66 +34,77 @@ r, v = np.zeros((N, 3)), np.zeros((N, 3))
 v[0][2] = 3 * E / B
 
 
-def update_position(i):
+def update_position(i, method):
     """
     Updates position vector of the charged particle.
     :param i: iteration we are on
     :return: nothing
     """
-    r[i][Coordinate.X] = r[i - 1][Coordinate.X] + v[i - 1][Coordinate.X] * DELTA_T
-    r[i][Coordinate.Y] = r[i - 1][Coordinate.Y] + v[i - 1][Coordinate.Y] * DELTA_T
-    r[i][Coordinate.Z] = r[i - 1][Coordinate.Z] + v[i - 1][Coordinate.Z] * DELTA_T
+    if method == 'TAYLOR':
+        r[i][Coordinate.X] = r[i - 1][Coordinate.X] + v[i - 1][Coordinate.X] * DELTA_T
+        r[i][Coordinate.Y] = r[i - 1][Coordinate.Y] + v[i - 1][Coordinate.Y] * DELTA_T
+        r[i][Coordinate.Z] = r[i - 1][Coordinate.Z] + v[i - 1][Coordinate.Z] * DELTA_T
 
 
-def update_velocity(i):
+def update_velocity(i, method):
     """
     Updates velocity vector of the charged particle.
     :param i: iteration we are on
     :return: nothing
     """
-    factor = q / m
-    accelerations = [0, factor * (E - B * v[i - 1][Coordinate.Z]), factor * B * v[i - 1][Coordinate.Y]]
-    v[i][1] = v[i - 1][Coordinate.Y] + accelerations[Coordinate.Y] * DELTA_T
-    v[i][2] = v[i - 1][Coordinate.Z] + accelerations[Coordinate.Z] * DELTA_T
+    if method == 'TAYLOR':
+        factor = q / m
+        accelerations = [0, factor * (E - B * v[i - 1][Coordinate.Z]), factor * B * v[i - 1][Coordinate.Y]]
+        v[i][1] = v[i - 1][Coordinate.Y] + accelerations[Coordinate.Y] * DELTA_T
+        v[i][2] = v[i - 1][Coordinate.Z] + accelerations[Coordinate.Z] * DELTA_T
 
 
-def calculate():
+def calculate(method):
     """
     Iterates until end of T, each iteration calculating the current positions and velocities.
     :return: nothing
     """
     for i in range(N - 1):
-        update_position(i + 1)
-        update_velocity(i + 1)
+        update_position(i + 1, method)
+        update_velocity(i + 1, method)
 
 
-def graph_2D():
+def graph_motion():
     """
     Plots position and velocity of particle in the Y axis vs. Z axis
     :return: nothing
     """
-    plt.plot(r[:, Coordinate.Y], r[:, Coordinate.Z])
-    plt.show()
+    # graph position of particle in Z,Y plane
+    g = Graph(r[:, Coordinate.Y], r[:, Coordinate.Z])
+    g.set_labels("Position of particle in Z,Y plane", "Y [Arbitrary Units]", "Z [Arbitrary Units]")
+    g.plot()
 
-
-def graph_3D():
-    """
-    Plots position and velocity of particle in the Y axis vs. Z axis
-    :return: nothing
-    """
+    # graph position of particle in 3D
     ax = plt.axes(projection='3d')
     ax.scatter3D(r[:, Coordinate.X], r[:, Coordinate.Y], r[:, Coordinate.Z], c=r[:, Coordinate.Z], cmap='Greens')
     plt.show()
 
+    # graph velocity of particle in Z,Y plane
+    g = Graph(v[:, Coordinate.Y], v[:, Coordinate.Z])
+    g.set_labels("Velocity of particle in Z,Y plane", "Velocity in Y direction [Arbitrary Units]",
+                 "Velocity in Z direction [Arbitrary Units]")
+    g.plot()
 
-def taylor_method():
+
+def graph_error():
+    pass
+
+
+def run(method):
     """
-
+    Does whatever is needed - first calculates the positions and velocities at any time, then graphs them and
+    their accumulated error.
     :return:
     """
-    calculate()
-    graph_2D()
-    graph_3D()
+    calculate(method)
+    graph_motion()
+    graph_error()
 
 
-taylor_method()
+for method in {"TAYLOR", "MIDPOINT", "RUNGE-JUTTA"}:
+    run(method)
