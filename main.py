@@ -97,8 +97,8 @@ def graph_error():
 
 def run(method):
     """
-    Does whatever is needed - first calculates the positions and velocities at any time, then graphs them and
-    their accumulated error.
+    Calculates the positions and velocities at any time using the desired method,
+    then graphs the positions and velocities and their accumulated error.
     :return:
     """
     calculate(method)
