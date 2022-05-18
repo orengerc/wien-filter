@@ -1,10 +1,19 @@
 """
-Numerical exercise
-Roy & Oren
+-----------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
+Title: Numerical exercise - Electricity & Magnetism, HUJI 2022
+
+Copyright: Roy Guggenheim, Oren Gercenshtein
+
+Description: - Solves the problem of a particle's position under constant electric and magnetic fields.
+             - Utilizes the solution in order to implement a Wien-filter.
+             - Graphs the process.
+-----------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------
 """
 
-import numpy as np
-import matplotlib.pyplot as plt
 from enum import IntEnum
 from Graph import *
 
@@ -44,6 +53,12 @@ def update_position(i, method):
         r[i][Coordinate.X] = r[i - 1][Coordinate.X] + v[i - 1][Coordinate.X] * DELTA_T
         r[i][Coordinate.Y] = r[i - 1][Coordinate.Y] + v[i - 1][Coordinate.Y] * DELTA_T
         r[i][Coordinate.Z] = r[i - 1][Coordinate.Z] + v[i - 1][Coordinate.Z] * DELTA_T
+    elif method == 'MIDPOINT':
+        # TODO add method
+        pass
+    elif method == 'RUNGE-JUTTA':
+        # TODO add method
+        pass
 
 
 def update_velocity(i, method):
@@ -57,6 +72,12 @@ def update_velocity(i, method):
         accelerations = [0, factor * (E - B * v[i - 1][Coordinate.Z]), factor * B * v[i - 1][Coordinate.Y]]
         v[i][1] = v[i - 1][Coordinate.Y] + accelerations[Coordinate.Y] * DELTA_T
         v[i][2] = v[i - 1][Coordinate.Z] + accelerations[Coordinate.Z] * DELTA_T
+    elif method == 'MIDPOINT':
+        # TODO add method
+        pass
+    elif method == 'RUNGE-JUTTA':
+        # TODO add method
+        pass
 
 
 def calculate(method):
@@ -95,16 +116,18 @@ def graph_error():
     pass
 
 
-def run(method):
+def reset():
     """
-    Calculates the positions and velocities at any time using the desired method,
-    then graphs the positions and velocities and their accumulated error.
+    Reset the position, velocity arrays for the use of other methods.
     :return:
     """
+    global r, v
+    r, v = np.zeros((N, 3)), np.zeros((N, 3))
+    v[0][2] = 3 * E / B
+
+
+for method in ["TAYLOR", "MIDPOINT", "RUNGE-JUTTA"]:
     calculate(method)
     graph_motion()
     graph_error()
-
-
-for method in {"TAYLOR", "MIDPOINT", "RUNGE-JUTTA"}:
-    run(method)
+    reset()
